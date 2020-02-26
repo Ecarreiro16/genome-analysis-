@@ -6,3 +6,4 @@ output: html_document
 ---
 
 *[Lab 2](Lab-2-Emily-Carreiro- (2).html)
+lm
