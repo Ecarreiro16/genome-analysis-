@@ -5,5 +5,4 @@ date: "2/26/2020"
 output: html_document
 ---
 
-*[Lab 2](Lab-2-Emily-Carreiro- (2).html)
-lm
+*[Lab 2 Link!](Lab-2-Emily-Carreiro- (2).html)
