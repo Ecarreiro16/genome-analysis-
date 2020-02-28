@@ -1,0 +1,183 @@
+---
+title: "lab_2"
+author: "Emily Carreiro"
+date: "2/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+###Vectors
+```{r}
+SNPs<-c("AA","AA","GG","AG", "AG", "AA", "AG", "AA", "AA", "AA", "AG")
+SNPs
+```
+###Factors
+```{r}
+SNPs_cat<-factor (SNPs)
+SNPs_cat
+table(SNPs_cat)
+plot (SNPs_cat)
+as.numeric(SNPs_cat)
+```
+###Matrices
+```{r}
+Day1<-c(2,4,6,8)
+Day2<-c(3,6,9,12)
+Day3<-c(1,4,9,16)
+A<-cbind (Day1, Day2, Day3)
+A
+Day1<-c(2,4,6,8)
+Day2<-c(3,6,9,12)
+Day3<-c(1,4,9,16)
+B<-rbind (Day1,Day2,Day3)
+B
+Day4<-c(5,10,11,20)
+c<-rbind(B, Day4)
+c
+A*10
+A[1]
+A[12]
+A[,c(1,3)]
+A[c(2,4),]
+t(A)
+```
+###Data Frames
+```{r}
+Gene1 <-c(2,4,6,8)
+Gene2 <-c(3,6,9,12)
+Gene3 <-c(1,4,9,16)
+Gene<-c("Day1","Day2","Day3","Day4")
+RNAseq<-data.frame(Gene1,Gene2,Gene3,row.names = Gene)
+RNAseq
+RNAseq$Gene3
+plot(RNAseq$Gene1,RNAseq$Gene3)
+plot(RNAseq$Day,RNAseq$Gene3)
+RNAseq$Gene4<-c(5,10,15,20)
+RNAseq
+RNAseq[,"Gene5"]<-c(1,2,3,3)
+RNAseq
+RNAseq["Day 4",]<-rbind(10,14,20,22,3)
+RNAseq
+```
+###Checking on object types
+```{r}
+x=1
+str(x)
+a="ATGCCCTGA"
+str(a)
+str(SNPs)
+SNPs<-c("AA","AA", "GG", "AG","AG", "AA", "AG", "AA","AA","AA","AG")
+str(SNPs_cat)
+Day1 <- c(2,4,6,8)
+Day2 <- c(3,6,9,12)
+Day3 <- c(1,4,9,16)
+B<-rbind(Day1,Day2,Day3)
+str(B)
+Gene1 <- c(2,4,6,8)
+Gene2 <- c(3,6,9,12)
+Gene3 <- c(1,4,9,16)
+Gene <-c("Day 1", "Day 2", "Day 3", "Day 4")
+RNAseq<-data.frame(Gene1,Gene2,Gene3, row.names = Gene)
+str(RNAseq)
+```
+###Importing Data
+```{r}
+SNP_table<-read.table ("23andMe_example_cat25.txt", header=TRUE, sep="\t")
+SNP_table
+names (SNP_table)
+str(SNP_table)
+levels(SNP_table$genotype)
+dim(SNP_table)
+class(SNP_table)
+SNP_table
+head(SNP_table, n=10)
+tail(SNP_table, n=5)
+help(read.table)
+SNP_table$chromosome<-as.factor(SNP_table$chromosome)
+str(SNP_table)
+SNP_table$chromosome<-as.integer(SNP_table$chromosome)
+str(SNP_table)
+SNP_table_AG<-subset(SNP_table, genotype=='AG')
+SNP_table_AG
+table(SNP_table_AG$chromosome)
+subset(SNP_table, position>700000 & position<800000 )
+```
+###Exercise 1
+
+```{r}
+Ap1<-c(1,3,6,9,12)
+Bp2<-c(1,0,1,0,1)
+A<-cbind(Ap1,Bp2)
+A
+Ap1+Bp2
+Ap1-Bp2
+Ap1*Bp2
+Ap1/Bp2
+```
+###exercise 2
+```{r}
+Apple<-c(0,1,2,3)
+Pear<-c("aa","bb","cc","dd")
+Melon<-c("aa",1,"bb,2")
+str(Apple)
+str(Pear)
+str(Melon)
+```
+###Exercise 3
+```{r}
+genotype1<-c("AA","AA","AG","GG","GG")
+genotype2<-c("AA","AA","GG","GG","GG")
+RNAseq<-data.frame(genotype1,genotype2)
+RNAseq
+table(RNAseq)
+```
+###Exercise 4
+```{r}
+treatment1<-c(0,1,2,3,4)
+treatment2<-c(0,2,4,6,8)
+treatment3<-c(0,3,6,9,12)
+Time<-c(2,4,6,8,10)
+Experiment<- data.frame(treatment1,treatment2,treatment3,Time, row.names = Time)
+Experiment
+plot(Experiment$treatment3, Experiment$Time)
+
+```
+
+###Exercise 5
+```{r}
+SNP_table <- read.table("23andMe_complete.txt", header = TRUE, sep = "\t")
+SNP_table
+str(SNP_table$chromosome)
+table(SNP_table$chromosome)
+#Chromosome is a factor with 25 levels. It is different than the truncated file because in the truncated file chromosome is an integer and is only numbers. This difference occurs because unlike the truncated file, there are chromosome locations other than 1 included, which changes chromosome from an integer to a factor.This includes numbers and letters. These chromosomes can be find in the nucleus or the mitochondria, thus why there are differnet locations. 
+```
+###Exercise 6
+```{r}
+SNP_table <- read.table("23andMe_complete.txt", header = TRUE, sep = "\t")
+table(SNP_table$genotype)
+```
+
+###Exercise 7
+```{r}
+SNP_table_A<- subset(SNP_table, genotype == 'A') 
+SNP_table_A
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  

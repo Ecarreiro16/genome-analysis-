@@ -1,0 +1,123 @@
+---
+title: "Lab_3"
+author: "Emily Carreiro"
+date: "2/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+SNPs<- read.table("23andMe_complete.txt", header = TRUE, sep = "\t")
+str (SNPs)
+```
+
+```{r}
+class(SNPs)
+```
+
+```{r}
+typeof(SNPs)
+```
+
+```{r}
+str(SNPs)
+```
+```{r}
+summary(SNPs)
+```
+```{r}
+class(SNPs$genotype)
+summary(SNPs)
+```
+```{r}
+typeof(SNPs$genotype)
+```
+```{r}
+str(SNPs$genotype)
+```
+```{r}
+summary(SNPs$genotype)
+```
+```{r}
+summary(SNPs$chromosome)
+```
+```{r}
+summary(SNPs$position)
+```
+```{r}
+summary(SNPs$chromosome)
+```
+```{r}
+SNPs$chromosome = ordered(SNPs$chromosome, levels=c(seq(1, 22), "X", "Y", "MT"))
+```
+```{r}
+summary (SNPs$chromosome)
+```
+
+###Exercises
+```{r}
+library(tidyverse)
+SNPs<- read.table("23andMe_complete.txt", header = TRUE, sep = "\t")
+```
+
+###Exercise 1
+```{r}
+SNPs<- read.table("23andMe_complete.txt", header = TRUE, sep = "\t")
+str (SNPs)
+
+p<- ggplot(SNPs,aes(x = chromosome, fill = chromosome ))
+p + geom_bar(color = "black")
+```
+###Exercise 2
+```{r}
+SNPs$chromosome = ordered(SNPs$chromosome, levels=c(seq(1, 22), "X", "Y", "MT"))
+summary(SNPs$chromosome)
+ggplot(SNPs,aes(x = chromosome, fill = chromosome ))
+p<- ggplot(SNPs,aes(x = chromosome, fill = chromosome ))
+p + geom_bar(color = "black") 
+```
+
+
+###Exercise 3
+```{r}
+ggplot(SNPs,aes(x = chromosome, fill = genotype ))
+p<- ggplot(SNPs,aes(x = chromosome, fill = genotype ))
+p + geom_bar(color = "black")
+```
+
+
+###Exercise 4
+```{r}
+ggplot(SNPs, aes(x = chromosome, fill = genotype))
+p<- ggplot(SNPs,aes(x = chromosome, fill = genotype ))
+p + geom_bar(position = "fill", color = "black")
+```
+
+
+###Exercise 5
+```{r}
+p<- ggplot(SNPs,aes(chromosome, fill = genotype ))
+p + geom_bar ( position= "dodge")
+```
+
+###Exercise 6
+```{r}
+p<- ggplot(SNPs,aes( chromosome, fill = genotype ))
+p + geom_bar (position= "dodge") +
+  facet_wrap(~genotype)
+```
+
+
+
+
+
+
+
+
+
+
+
