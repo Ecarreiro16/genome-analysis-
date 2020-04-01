@@ -11,13 +11,16 @@ bibliography: data/Archeology.bib
 *[Lab 4 link!](Lab-4.html])
 *[Lab 5 link!](Lab_5_E.Carreiro-.html])
 
-Examples include [@david_ronfeldt_search_2006], [@william_s._simmons_indian_1997], [@kenneth_m._ames_chiefly_1995], [@gary_coupland_wealth_2016], [@kenneth_e._sassaman_complex_2004]
+Examples include
 
 
 Context is from paper written in 2019 from Archeology of North America
 
+#COV Graphs
+
+*[COV-19 Link](Lab-9_Carreiro.html)
+
 
 # REFERENCES
 
-#COV Graphs
-*[COV-19 Link](Lab-9_Carreiro.html)
+
