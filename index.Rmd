@@ -10,12 +10,7 @@ output: html_document
 *[Lab 4 link!](Lab-4.html])
 *[Lab 5 link!](Lab_5_E.Carreiro-.html])
 
-Examples include
-
-
-Context is from paper written in 2019 from Archeology of North America
-
-#COV Graphs
+COV Graphs
 
 *[COV-19 Link](Lab-9_Carreiro.html)
 
