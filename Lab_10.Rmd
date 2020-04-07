@@ -1,0 +1,243 @@
+---
+title: "COV-19_Report_ECarreiro"
+author: "Emily Carreiro"
+date: "4/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+###This information has been sourced from the JHU CSSE on the continuely changin state of the Corona Virus. The important used in these graphs can be found from both the daily reports and the time-series. Data below will show date up until March 31st, the date of the most up-to-date data at this time.
+
+###An overview of the global virus spread can be seen below:
+```{r}
+library(tidyverse)
+library(maps)
+library(mapdata)
+library(lubridate)
+library(viridis)
+library(wesanderson)
+library(ggplot2)
+library(gganimate)
+theme_set(theme_bw())
+library(plotly)
+
+covid1 <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")) %>%
+           rename(Province_State= "Province/State", Country_Region = "Country/Region") %>%
+           pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+                  names_to = "Date", values_to = "Confirmed") %>%
+           mutate(Date = mdy(Date) - days(1),
+                  Place = paste(Lat,Long,sep="_")) %>%
+
+             group_by(Place,Date) %>%
+           summarise(cumulative_cases = ifelse(sum(Confirmed)>0,
+                     sum(Confirmed),NA_real_),
+                     Lat = mean(Lat),
+                     Long = mean(Long)) %>%
+           mutate(Pandemic_day = as.numeric(Date - min(Date)))
+
+world <- ggplot(covid1,aes(x = Long, y = Lat, size = cumulative_cases/1000)) +
+                 borders("world", colour = "gray50", fill = "grey90") +
+                 theme_bw() +
+                 geom_point(color='blue', alpha = .5) +
+                 labs(title = 'Pandemic Day: {frame}',x = '', y = '',
+                      size="Cases (x1000))") +
+                 theme(legend.position = "right") +
+                 coord_fixed(ratio=1.3)+
+                 transition_time(Date) +
+                 enter_fade()
+
+animate(world,renderer = gifski_renderer(), end_pause = 15)
+```
+###The above animated graph shows how the numbers of confirmed cases have changed from January until now. This shows how the spread has been occuring at an accelerated rate and when it traveled to the different countries. More information on the amount confirmed can be seen in the bar graph below.
+
+###The Top 20 Infected Countries are shown in the bar graph below. The bars represent the number of cases that have been confirmed in the top 20 countries. 
+```{r}
+report_03_31_2020 <-   read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-31-2020.csv")) %>%
+  rename(Country_Region = "Country_Region", Province_State = "Province_State")
+head(report_03_31_2020)  
+  
+ report_03_31_2020 %>% 
+group_by(Country_Region) %>% 
+summarise(Confirmed = sum(Confirmed)) %>% 
+arrange(desc(Confirmed))
+  
+plotly.data<-report_03_31_2020 %>% 
+  group_by(Country_Region) %>% 
+  summarise(Confirmed = sum(Confirmed)) %>% 
+  arrange(desc(Confirmed)) %>% 
+  slice(1:20)  
+  
+ggplotly(
+      ggplot(data = plotly.data , mapping = aes(x = Country_Region, y = Confirmed))+
+    geom_bar(stat = 'identity')+
+    coord_flip()+
+    ggtitle("The 20 Countries With the Most Reported COV19-related Cases") +
+    ylab("Country/Region") +
+    xlab("Confirmed")
+)
+    
+```
+###The bar graph shows the top 20 countries who have the highest number of cases. These countries are the ones that need to be most warry of spread. The cooresponding death rate is shown below, but must be kept in consideration to the total number of cases.
+```{r}
+covidr <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")) %>%
+           rename(Province_State= "Province/State", Country_Region = "Country/Region") %>%
+           pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+                  names_to = "Date", values_to = "Recovered") %>%
+           mutate(Date = mdy(Date) - days(1),
+                  Place = paste(Lat,Long,sep="_")) %>%
+
+             group_by(Place,Date) %>%
+           summarise(cumulative_cases = ifelse(sum(Recovered)>0,
+                     sum(Recovered),NA_real_),
+                     Lat = mean(Lat),
+                     Long = mean(Long)) %>%
+           mutate(Pandemic_day = as.numeric(Date - min(Date)))
+
+world <- ggplot(covidr,aes(x = Long, y = Lat, size = cumulative_cases/1000)) +
+                 borders("world", colour = "gray50", fill = "grey90") +
+                 theme_bw() +
+                 geom_point(color='purple', alpha = .5) +
+                 labs(title = 'Pandemic Day: {frame}',x = '', y = '',
+                      size="Cases (x1000))") +
+                 theme(legend.position = "right") +
+                 coord_fixed(ratio=1.3)+
+                 transition_time(Date) +
+                 enter_fade()
+
+animate(world,renderer = gifski_renderer(), end_pause = 15)
+```
+
+###This may look alarming, but keep in mind that the number of deaths overall, ~70,000 is compared to the total cases, which is ~1,286,000. Seeing as we are in the United States, we are able to zoom in on just the United States spread. 
+```{r}
+daily_report <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-27-2020.csv")) %>% 
+  rename(Long = "Long_") %>% 
+  filter(Country_Region == "US") %>% 
+  group_by(Province_State) %>% 
+  summarize(Confirmed = sum(Confirmed)) %>% 
+  mutate(Province_State = tolower(Province_State))
+
+head(daily_report)
+
+us <- map_data("state")
+
+state_join <- left_join(us, daily_report, by = c("region" = "Province_State"))
+
+ggplotly(
+ggplot(data = state_join, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+
+  geom_polygon(color = "black", fill = NA)+ geom_polygon(data = state_join, aes(fill = Confirmed), color = "white") +
+    
+  labs(title = "COVID-19 Confirmed Cases in the US'")+
+  
+  scale_fill_gradientn(colours = 
+                         wes_palette("Zissou1", 100, type = "continuous"),
+                         trans = "log10") 
+ )
+```
+###This data can be continued to be broken down by state, namely Massachusetts in this case
+```{r}
+library(plotly)
+us <- map_data("state")
+ma_us <- subset(us, region == "massachusetts")
+counties <- map_data("county")
+ma_county <- subset(counties, region == "massachusetts")
+
+ggplotly(
+  ggplot(data = ma_county, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+
+  geom_polygon(data = state_join, aes(fill = Confirmed), color = "black") +
+    scale_fill_gradientn(colours = 
+                         wes_palette("Zissou1", 100, type = "continuous")) +
+  ggtitle("COVID-19 Cases in MA") +
+
+  labs(x=NULL, y=NULL) +
+  theme(panel.border = element_blank()) +
+  theme(panel.background = element_blank()) +
+  theme(axis.ticks = element_blank()) +
+  theme(axis.text = element_blank())
+)
+```
+###Although this data can look frightening, it is worth looking at the recovery rates.
+```{r}
+library(tidyverse)
+library(maps)
+library(mapdata)
+library(lubridate)
+library(viridis)
+library(wesanderson)
+library(ggplot2)
+library(gganimate)
+theme_set(theme_bw())
+library(plotly)
+time_series_confirmed_long <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")) %>%
+  rename(Province_State = "Province/State", Country_Region = "Country/Region")  %>% 
+               pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+                            names_to = "Date", values_to = "Confirmed") 
+
+# Let's get the times series data for deaths
+
+time_series_deaths_long <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")) %>%
+  rename(Province_State = "Province/State", Country_Region = "Country/Region")  %>% 
+  pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+               names_to = "Date", values_to = "Deaths")
+
+time_series_recovered_long <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")) %>%
+  rename(Province_State = "Province/State", Country_Region = "Country/Region") %>% 
+  pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+               names_to = "Date", values_to = "Recovered")
+
+# Create Keys 
+
+time_series_confirmed_long <- time_series_confirmed_long %>% 
+  unite(Key, Province_State, Country_Region, Date, sep = ".", remove = FALSE)
+
+time_series_deaths_long <- time_series_deaths_long %>% 
+  unite(Key, Province_State, Country_Region, Date, sep = ".") %>% 
+  select(Key, Deaths)
+
+time_series_recovered_long <- time_series_recovered_long %>% 
+  unite(Key, Province_State, Country_Region, Date, sep = ".") %>% 
+  select(Key, Recovered)
+
+# Join tables
+time_series_long_joined <- full_join(time_series_confirmed_long,
+              time_series_deaths_long, by = c("Key"))
+
+time_series_long_joined <- full_join(time_series_long_joined,
+              time_series_recovered_long, by = c("Key")) %>% 
+    select(-Key)
+
+# Reformat the data
+time_series_long_joined$Date <- mdy(time_series_long_joined$Date)
+
+# Create Report table with counts
+time_series_long_joined_counts <- time_series_long_joined %>% 
+  pivot_longer(-c(Province_State, Country_Region, Lat, Long, Date),
+               names_to = "Report_Type", values_to = "Counts")
+
+library(ggplot2)
+library(gganimate)
+theme_set(theme_bw())
+
+data_time <- time_series_long_joined %>% 
+    group_by(Country_Region,Date) %>% 
+    summarise_at(c("Recovered"), sum) %>% 
+    filter (Country_Region %in% c("China","Korea, South","Japan","US")) 
+
+p <- ggplot(data_time, aes(x = Date,  y = Recovered, color = Country_Region)) + 
+      geom_point() +
+      geom_line() +
+      ggtitle("Confirmed Recovery COVID-19 Cases") +
+      geom_point(aes(group = seq_along(Date))) +
+      transition_reveal(Date) 
+    
+animate(p,renderer = gifski_renderer(), end_pause = 15)
+```
+```
+
+
+###Although the U.S. looks low in its recovery arch, it is possible that our recovery rate may look like China's. As you can see toward the end, the U.S. beings to spike like China does in the beginning of the graph. This means that it is possible we are reaching the exponential rate of recovery like China has. It is only delayed due to the U.S. being affected later than China was.  
