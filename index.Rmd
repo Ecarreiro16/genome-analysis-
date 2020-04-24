@@ -17,6 +17,16 @@ COV Graphs
 #Covid19 Data: USA and Beyond
 *[COV-19 Carreuro Report Link](Lab_10.html)
 
+More COVID-19 Graphs, But SHINY :)
+
+http://ecarreiro2020.shinyapps.io/ShinyAppONE
+
+http://ecarreiro2020.shinyapps.io/Shiny_App_2
+
+ https://ecarreiro2020.shinyapps.io/ShinyApp3
+ 
+http://ecarreiro2020.shinyapps.io/ShinyApp4
+
 # REFERENCES
 `World Health Organization (WHO): https://www.who.int/
   DXY.cn. Pneumonia. 2020. http://3g.dxy.cn/newh5/view/pneumonia.
